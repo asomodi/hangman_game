@@ -14,6 +14,8 @@ const words = ['application', 'programming', 'interface', 'wizard'];
 
 let selectedWord = words[Math.floor(Math.random() * words.length)];
 
+let playable = true;
+
 const correctLetters = ['w', 'i', 'z', 'a', 'r', 'd'];
 const wrongLetters = [];
 
@@ -35,6 +37,8 @@ function displayWord() {
   if (innerWord === selectedWord) {
     finalMessage.innerText = 'Congratulations! You won! 😃';
     popup.style.display = 'flex';
+
+    playable = false;
   }
 }
 
@@ -60,6 +64,8 @@ function updateWrongLettersElement() {
   if (wrongLetters.length === figureParts.length) {
     finalMessage.innerText = 'Unfortunately you lost. 😕';
     popup.style.display = 'flex';
+
+    playable = false;
   }
 }
 
@@ -74,28 +80,46 @@ function showNotification() {
 
 // Keydown letter press
 window.addEventListener('keydown', e => {
-  // console.log(e.keyCode);
-  if (e.keyCode >= 65 && e.keyCode <= 90) {
-    const letter = e.key;
+  if (playable) {
+    // console.log(e.keyCode);
+    if (e.keyCode >= 65 && e.keyCode <= 90) {
+      const letter = e.key;
 
-    if (selectedWord.includes(letter)) {
-      if (!correctLetters.includes(letter)) {
-        correctLetters.push(letter);
+      if (selectedWord.includes(letter)) {
+        if (!correctLetters.includes(letter)) {
+          correctLetters.push(letter);
 
-        displayWord();
+          displayWord();
+        } else {
+          showNotification();
+        }
       } else {
-        showNotification();
-      }
-    } else {
-      if (!wrongLetters.includes(letter)) {
-        wrongLetters.push(letter);
+        if (!wrongLetters.includes(letter)) {
+          wrongLetters.push(letter);
 
-        updateWrongLettersElement();
-      } else {
-        showNotification();
+          updateWrongLettersElement();
+        } else {
+          showNotification();
+        }
       }
     }
   }
+});
+
+// Restart game and play again
+playAgainButton.addEventListener('click', () => {
+  playable = true;
+  //  Empty arrays
+  correctLetters.splice(0);
+  wrongLetters.splice(0);
+
+  selectedWord = words[Math.floor(Math.random() * words.length)];
+
+  displayWord();
+
+  updateWrongLettersElement();
+
+  popup.style.display = 'none';
 });
 
 displayWord();
